@@ -8,11 +8,11 @@
     "lint:fix:eslint": "yarn lint:eslint --fix"
   },
   "dependencies": {
-    "@test-node/backend-core": "workspace:^",
-    "pg": "^8.11.2"
+    "@test-node/backend-core": "workspace:^"
   },
   "devDependencies": {
     "esbuild": "^0.19.1",
+    "pg": "^8.11.2",
     "ts-node": "^10.9.1"
   }
 }

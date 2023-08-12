@@ -9,10 +9,14 @@ import {
 
 @Table.Abstract
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class DAO<M extends DAO<M> = DAO<any>> extends Model<
+export class PO<M extends PO<M> = PO<any>> extends Model<
   InferAttributes<M>,
   InferCreationAttributes<M>
-> {
+> {}
+
+@Table.Abstract
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export class EntityPO<M extends EntityPO<M> = EntityPO<any>> extends PO<M> {
   @Attribute(DataTypes.UUID)
   @PrimaryKey
   @Default(DataTypes.UUIDV4)
