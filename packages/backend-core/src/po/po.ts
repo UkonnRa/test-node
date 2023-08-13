@@ -24,4 +24,8 @@ export class EntityPO<M extends EntityPO<M> = EntityPO<any>> extends PO<M> {
 
   @Version
   declare version: CreationOptional<number>;
+
+  declare createdAt: CreationOptional<Date>;
+
+  declare updatedAt: CreationOptional<Date>;
 }

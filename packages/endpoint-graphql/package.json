@@ -1,6 +1,6 @@
 {
   "name": "@test-node/endpoint-graphql",
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@4.0.2",
   "scripts": {
     "dev": "ts-node src/main.ts",
     "build": "node esbuild.mjs",
@@ -11,9 +11,9 @@
     "@test-node/backend-core": "workspace:^"
   },
   "devDependencies": {
-    "esbuild": "^0.19.1",
-    "pg": "^8.11.2",
+    "esbuild": "^0.19.9",
+    "pg": "^8.11.3",
     "sqlite3": "^5.1.6",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.2"
   }
 }

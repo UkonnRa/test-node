@@ -1,6 +1,6 @@
 {
   "name": "@test-node/backend-core",
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@4.0.2",
   "main": "src/index.ts",
   "scripts": {
     "lint:eslint": "eslint . --ext .ts --ignore-path ../../.eslintignore",
@@ -9,11 +9,12 @@
   "dependencies": {
     "@sequelize/core": "alpha",
     "dotenv": "^16.3.1",
-    "winston": "^3.10.0"
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
-    "@types/uuid": "^9.0.2",
-    "esbuild": "^0.19.1",
-    "ts-node": "^10.9.1"
+    "@types/uuid": "^9.0.7",
+    "esbuild": "^0.19.9",
+    "ts-node": "^10.9.2"
   }
 }

@@ -43,6 +43,14 @@ export class AccountPO extends EntityPO<AccountPO> {
   @NotNull
   declare name: string;
 
+  @Attribute(DataTypes.STRING)
+  @NotNull
+  declare description: string;
+
+  @Attribute(DataTypes.STRING)
+  @NotNull
+  declare unit: string;
+
   @BelongsTo(() => JournalPO, "journalId")
   declare journal?: NonAttribute<JournalPO>;
 

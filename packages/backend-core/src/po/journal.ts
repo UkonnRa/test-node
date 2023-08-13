@@ -6,6 +6,7 @@ import {
   PrimaryKey,
   Table,
   BelongsToMany,
+  Default,
 } from "@sequelize/core/decorators-legacy";
 import { JournalBO } from "../bo";
 import { EntityPO, PO } from "./po";
@@ -74,6 +75,15 @@ export class JournalPO extends EntityPO<JournalPO> {
   @Attribute(DataTypes.STRING)
   @NotNull
   declare name: string;
+
+  @Attribute(DataTypes.TEXT)
+  @NotNull
+  @Default("")
+  declare description: string;
+
+  @Attribute(DataTypes.STRING)
+  @NotNull
+  declare unit: string;
 
   @BelongsToMany(() => UserPO, {
     through: {

@@ -1,11 +1,12 @@
 import {
   ACCOUNT_TYPES,
+  AccountBO,
   AccountPO,
+  JournalBO,
   JournalPO,
-  JournalUserPO,
   logger,
   POS,
-  UserPO,
+  UserBO,
 } from "@test-node/backend-core";
 
 (async () => {
@@ -14,39 +15,44 @@ import {
       await po.sync({ force: true });
     }
 
-    const users = await UserPO.bulkCreate(
-      [...Array(5)].map((_, i) => ({
-        name: `User ${i}`,
-        isAdmin: i % 3 === 0,
-      })),
+    const users = [...Array(5)].map(
+      (_, i) =>
+        new UserBO({
+          name: `User ${i}`,
+          isAdmin: i % 3 === 0,
+        }),
     );
 
-    const journals = await JournalPO.bulkCreate(
-      [...Array(3)].map((_, i) => {
-        const name = `Journal ${i}`;
-        return {
-          name: `Journal ${i}`,
-          tags: [
-            { tag: `${name} - 1` },
-            { tag: `${name} - 2` },
-            { tag: `${name} - 3` },
-            { tag: `${name} - 4` },
-          ],
-        };
-      }),
-      {
-        include: ["tags"],
-      },
-    );
+    await Promise.all(users.map((user) => user.toPO().save()));
 
-    await JournalUserPO.bulkCreate(
-      journals.flatMap((journal, i) => [
-        { journalId: journal.id, userId: users[i].id, isAdmin: true },
-        { journalId: journal.id, userId: users[i + 1].id, isAdmin: false },
-        { journalId: journal.id, userId: users[i + 2].id, isAdmin: false },
-      ]),
-    );
+    const journals = [...Array(3)].map((_, i) => {
+      const name = `Journal ${i}`;
+      const tags = [`${name} - 1`, `${name} - 2`, `${name} - 3`, `${name} - 4`];
+      return new JournalBO({
+        name,
+        tags,
+        description: "",
+        unit: `Unit ${i}`,
+        adminIds: [users[i].id],
+        memberIds: [users[i + 1].id, users[i + 2].id],
+      });
+    });
 
+    const journalPOs = [];
+    const journalTagPOs = [];
+    const journalUserPOs = [];
+    for (const journal of journals) {
+      const [journalPO, tagPOs, userPOs] = journal.toPO();
+      journalPOs.push(journalPO);
+      journalTagPOs.push(...tagPOs);
+      journalUserPOs.push(...userPOs);
+    }
+
+    await Promise.all(journalPOs.map((po) => po.save()));
+    await Promise.all(journalTagPOs.map((po) => po.save()));
+    await Promise.all(journalUserPOs.map((po) => po.save()));
+
+    const accounts = [];
     for (const journal of await JournalPO.findAll()) {
       logger.info("Get Journal", {
         journal: journal.toJSON(),
@@ -55,25 +61,31 @@ import {
         members: (await journal.getMembers()).map((user) => user.name),
       });
 
-      await AccountPO.bulkCreate(
-        journals.flatMap((journal) =>
-          ACCOUNT_TYPES.map((accountType) => ({
-            journalId: journal.id,
-            name: `${journal.name} - ${accountType}`,
-            type: accountType,
-            tags: [
-              { tag: `${journal.name} - ${accountType} - 1` },
-              { tag: `${journal.name} - ${accountType} - 2` },
-              { tag: `${journal.name} - ${accountType} - 3` },
-              { tag: `${journal.name} - ${accountType} - 4` },
-            ],
-          })),
+      accounts.push(
+        ...ACCOUNT_TYPES.map(
+          (type, i) =>
+            new AccountBO({
+              name: `${journal.name} - ${type}`,
+              description: "",
+              unit: `Unit ${i}`,
+              journalId: journal.id,
+              tags: ["tag 1", "tag 2", "tag 3"],
+              type: type,
+            }),
         ),
-        {
-          include: ["tags"],
-        },
       );
     }
+
+    const accountPOs = [];
+    const accountTagPOs = [];
+    for (const account of accounts) {
+      const [po, tags] = account.toPO();
+      accountPOs.push(po);
+      accountTagPOs.push(...tags);
+    }
+
+    await Promise.all(accountPOs.map((po) => po.save()));
+    await Promise.all(accountTagPOs.map((po) => po.save()));
 
     for (const account of await AccountPO.findAll({ where: { journalId: journals[0].id } })) {
       logger.info("Get Account", {
